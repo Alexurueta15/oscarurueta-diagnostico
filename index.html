@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">first_name</th>
+        <th scope="col">last_name</th>
+        <th scope="col">email</th>
+        <th scope="col">acciones</th>
+    </tr>
+    </thead>
+    <tbody id="tableBody">
+    </tbody>
+</table>
+<form>
+    <div id="liveAlertPlaceholder">
+
+    </div>
+    <h1>Registrar persona</h1>
+    <div class="ms-auto">
+        <label for="first_name" class="form-label">First name</label>
+        <input type="text" class="form-control" id="first_name">
+    </div>
+    <button type="button" class="btn btn-success" id="liveAlertBtn">Registrar</button>
+</form>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+        crossorigin="anonymous"></script>
+
+<script>
+    fetch("https://reqres.in/api/users").then((response) => response.json())
+        .then((data) => {
+            data = data.data;
+            let tableBody = document.getElementById("tableBody");
+            data.forEach((element) => {
+                tableBody.insertAdjacentHTML('beforeend',
+                    '<tr>' +
+                    '<th scope="row">' + element.id + '</th>\n' +
+                    '        <td>' + element.first_name + '</td>\n' +
+                    '        <td>' + element.last_name + '</td>\n' +
+                    '        <td>' + element.email + '</td>\n' +
+                    '        <td><button type="button" class="btn btn-warning" id=' + element.id + '>Editar</button>\n' +
+                    '            <button type="button" class="btn btn-danger" id=' + element.id + '>Eliminar</button></td>' +
+                    '</tr>');
+            });
+        });
+
+    var alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+    var alertTrigger = document.getElementById('liveAlertBtn')
+
+    function alert(message, type) {
+        var wrapper = document.createElement('div')
+        wrapper.innerHTML = '<div class="alert alert-' + type + ' alert-dismissible" role="alert">' + message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>'
+
+        alertPlaceholder.append(wrapper)
+    }
+
+    if (alertTrigger) {
+        alertTrigger.addEventListener('click', function () {
+            let first_name = document.getElementById("first_name").value;
+            fetch("https://reqres.in/api/users", {
+                method: "post",
+                body: {
+                    "name": first_name
+                }
+            }).then((response) => {
+                if (response.status === 201) {
+                    alert('Tu registro se ha guardado', 'success')
+                } else {
+                    alert('Tu registro no se ha guardado', 'danger')
+                }
+            })
+
+        })
+    }
+</script>
+
+</html>
